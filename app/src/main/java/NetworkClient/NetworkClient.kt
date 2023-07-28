@@ -1,0 +1,4 @@
+package NetworkClient
+
+class NetworkClient {
+}
