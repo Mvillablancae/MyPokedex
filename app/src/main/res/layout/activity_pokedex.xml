@@ -1,6 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- activity_pokedex.xml -->
-<ListView xmlns:android="http://schemas.android.com/apk/res/android"
-android:id="@+id/listView"
-android:layout_width="match_parent"
-android:layout_height="match_parent" />
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PokedexListActivity">
+
+    <!-- Agrega el ListView -->
+
+    <!-- Agrega el ProgressBar que estará oculto inicialmente -->
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="0.5dp"
+        android:padding="16dp"
+        android:scrollbars="vertical">
+
+    </ListView>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@android:style/Widget.DeviceDefault.Light.ProgressBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/listView"
+        android:layout_centerVertical="false"
+        android:alpha="1"
+        android:indeterminate="false"
+        android:max="100"
+        android:progress="0"
+        android:progressTint="#9C27B0"
+        android:visibility="visible" />
+
+</RelativeLayout>
