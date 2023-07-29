@@ -6,13 +6,14 @@ import retrofit2.Response
 
 
 import model.PokemonDetailResponse
+import model.PokemonListResponse
 
 interface PokemonApiService {
     @GET("pokemon")
     suspend fun getPokemonList(
         @Query("offset") offset: Int,
         @Query("limit") limit: Int
-    ): Response<ArrayList<PokemonDetailResponse>>
+    ): Response<PokemonListResponse>
 
     @GET("pokemon/{name}")
     suspend fun getPokemonDetail(@Path("name") name: String): Response<PokemonDetailResponse>

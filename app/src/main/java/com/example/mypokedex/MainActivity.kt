@@ -1,11 +1,21 @@
 package com.example.mypokedex
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
+import android.app.Activity
 import android.os.Bundle
 
-class MainActivity : AppCompatActivity() {
+import ui.pokedex.PokedexListActivity
+
+class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        // Agregar el código para iniciar PokedexActivity
+        val intent = Intent(this, PokedexListActivity::class.java)
+        startActivity(intent)
+
+        // Finalizar MainActivity para que no se quede en el historial
+        finish()
+        //setContentView(R.layout.activity_pokedex)
     }
 }
