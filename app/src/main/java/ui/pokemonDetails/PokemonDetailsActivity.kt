@@ -4,6 +4,7 @@ import Network.PokeAPIClient
 import android.app.Activity
 import android.os.Bundle
 import android.widget.ImageView
+import android.view.View
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -66,14 +67,31 @@ class PokemonDetailsActivity : Activity() {
 
 
     private fun loadPokemonDetails(name : String) {
-        isLoading = true
-        //progressBar.visibility = View.VISIBLE
+
+        val textViewTypeTitle = findViewById<TextView>(R.id.textViewType)
         val typesLinearLayout = findViewById<LinearLayout>(R.id.types)
         val pokemonStatsLinearLayout = findViewById<LinearLayout>(R.id.pokemonStats)
+        val textViewHeightTitle = findViewById<TextView>(R.id.textViewHeight)
+        val textViewWeightTitle = findViewById<TextView>(R.id.textViewWeight)
         val textViewHeight = findViewById<TextView>(R.id.textViewHeightValue)
         val textViewWeight = findViewById<TextView>(R.id.textViewWeightValue)
-
+        progressBar = findViewById<ProgressBar>(R.id.progressBar2)
         val imageView = findViewById<ImageView>(R.id.imageViewPokemonDefaultSprite)
+        var textViewErrorDetails = findViewById<TextView>(R.id.textViewErrorDetails)
+
+        isLoading = true
+        progressBar.visibility = View.VISIBLE
+        textViewErrorDetails.visibility = View.GONE
+        textViewTypeTitle.visibility = View.GONE
+        typesLinearLayout.visibility = View.GONE
+        pokemonStatsLinearLayout.visibility = View.GONE
+        textViewHeightTitle.visibility = View.GONE
+        textViewWeightTitle.visibility = View.GONE
+        textViewHeight.visibility = View.GONE
+        textViewWeight.visibility = View.GONE
+        imageView.visibility = View.GONE
+
+
         coroutineScope.launch(Dispatchers.Main) {
             try {
                 val response = withContext(Dispatchers.IO) {
@@ -117,23 +135,40 @@ class PokemonDetailsActivity : Activity() {
                             .into(imageView)
                     }
 
+                    progressBar.visibility = View.GONE
+                    typesLinearLayout.visibility = View.VISIBLE
+                    textViewTypeTitle.visibility = View.VISIBLE
+                    pokemonStatsLinearLayout.visibility = View.VISIBLE
+                    textViewHeightTitle.visibility = View.VISIBLE
+                    textViewWeightTitle.visibility = View.VISIBLE
+                    textViewHeight.visibility = View.VISIBLE
+                    textViewWeight.visibility = View.VISIBLE
+                    imageView.visibility = View.VISIBLE
+
                 } else {
+                    textViewErrorDetails.text = "Error en el servidor, por favor inténtelo de nuevo más tarde."
+                    textViewErrorDetails.visibility = View.VISIBLE
                     Toast.makeText(
                         this@PokemonDetailsActivity,
-                        "Error en el servidor, inténtelo de nuevo más tarde.",
+                        "Ha ocurrido un error.",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
             }catch (e: IOException) {
                 // Error de conexión de red
-                Toast.makeText(this@PokemonDetailsActivity, "Error de conexión de red", Toast.LENGTH_SHORT).show()
+                textViewErrorDetails.text = "Error de red, revise su conexión e por favor inténtelo de nuevo más tarde."
+                textViewErrorDetails.visibility = View.VISIBLE
+                Toast.makeText(this@PokemonDetailsActivity, "Error de conexión", Toast.LENGTH_SHORT).show()
 
             } catch (e: Exception) {
                 println("e: ${e.message}")
+                textViewErrorDetails.text = "Error desconocido, por favor inténtelo de nuevo más tarde."
+                textViewErrorDetails.visibility = View.VISIBLE
                 Toast.makeText(this@PokemonDetailsActivity, "Error: ${e.message}.", Toast.LENGTH_SHORT).show()
             }
             isLoading = false
-            //progressBar.visibility = View.GONE
+
+
         }
     }
 
