@@ -2,11 +2,11 @@
     <!-- Base application theme. -->
     <style name="Theme.Mypokedex" parent="android:Theme.Material.Light.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="android:colorPrimary">#FFBB86FC</item>
+        <item name="android:colorPrimary">#B30000</item>
 
 
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">#FF3700B3</item>
+        <item name="android:statusBarColor">#B30000</item>
         <!-- Customize your theme here. -->
 
         <!-- The following items are specific to minSdkVersion 24 -->

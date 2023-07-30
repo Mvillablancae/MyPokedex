@@ -3,10 +3,11 @@ package ui.pokemonDetails
 import Network.PokeAPIClient
 import android.app.Activity
 import android.os.Bundle
-import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.ProgressBar
 import android.widget.Toast
+import com.bumptech.glide.Glide
 
 //Manejo de errores
 import java.lang.Exception
@@ -20,9 +21,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 
+
 import com.example.mypokedex.R
+import kotlinx.android.synthetic.main.item_pokemon.*
 import kotlinx.android.synthetic.main.pokemon_details.*
-import model.Pokemon
+
+
 import model.PokemonDetailResponse
 
 class PokemonDetailsActivity : Activity() {
@@ -45,14 +49,10 @@ class PokemonDetailsActivity : Activity() {
         var nombre : String = intent.getStringExtra("name") ?: "Unknown"
 
 
-        //Obtener elementos de la vista
-        val textViewNombre = findViewById<TextView>(R.id.textViewNameValue)
-        val textViewTipo = findViewById<TextView>(R.id.textViewTypeValue)
-        val textViewPokedexId = findViewById<TextView>(R.id.textViewIdPokedexValue)
+
 
         // Mostrar el nombre en el TextView
         title = nombre
-        textViewNombre.text = nombre
         loadPokemonDetails(nombre)
     }
 
@@ -66,6 +66,11 @@ class PokemonDetailsActivity : Activity() {
     private fun loadPokemonDetails(name : String) {
         isLoading = true
         //progressBar.visibility = View.VISIBLE
+        val textViewTipo = findViewById<TextView>(R.id.textViewTypeValue)
+        val textViewHeight = findViewById<TextView>(R.id.textViewHeightValue)
+        val textViewWeight = findViewById<TextView>(R.id.textViewWeightValue)
+
+        val imageView = findViewById<ImageView>(R.id.imageViewPokemonDefaultSprite)
         coroutineScope.launch(Dispatchers.Main) {
             try {
                 val response = withContext(Dispatchers.IO) {
@@ -78,8 +83,13 @@ class PokemonDetailsActivity : Activity() {
                     if(pokemonDetails == null){
                         throw Exception("Pokemon no válido")
                     }else{
-                        textViewIdPokedexValue.text = pokemonDetails?.id.toString()
+                        title = "#${pokemonDetails?.id.toString()} ${pokemonDetails?.name}"
                         textViewTypeValue.text = pokemonDetails?.types!!.first().type?.name
+                        textViewHeight.text = "${pokemonDetails?.height.toString()} ft."
+                        textViewWeight.text = "${pokemonDetails?.weight.toString()} lbs."
+                        Glide.with(this@PokemonDetailsActivity)
+                            .load(pokemonDetails!!.sprites!!.frontDefault)
+                            .into(imageView)
                     }
 
                 } else {
@@ -94,7 +104,8 @@ class PokemonDetailsActivity : Activity() {
                 Toast.makeText(this@PokemonDetailsActivity, "Error de conexión de red", Toast.LENGTH_SHORT).show()
 
             } catch (e: Exception) {
-                Toast.makeText(this@PokemonDetailsActivity, "Error desconocido, inténtelo de nuevo más tarde.", Toast.LENGTH_SHORT).show()
+                println("e: ${e.message}")
+                Toast.makeText(this@PokemonDetailsActivity, "Error: ${e.message}.", Toast.LENGTH_SHORT).show()
             }
             isLoading = false
             //progressBar.visibility = View.GONE

@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
+import android.widget.TextClock
 
 import android.widget.AbsListView
 import android.widget.ListView
@@ -56,6 +57,18 @@ class PokedexListActivity : Activity() {
         pokemonAdapter = PokemonListAdapter(this, pokemonList)
 
         listView.adapter = pokemonAdapter
+
+        // Crear una instancia de TextClock
+        val textClock = TextClock(this)
+        textClock.textSize = 18f
+        //textClock.format12Hour = "hh:mm:ss a"
+        textClock.format24Hour = "HH:mm"
+
+        // Configurar el TextClock como vista personalizada en la ActionBar
+        actionBar?.setDisplayShowCustomEnabled(true)
+        actionBar?.setDisplayHomeAsUpEnabled(false)
+        actionBar?.setDisplayShowTitleEnabled(false)
+        actionBar?.customView = textClock
 
         listView.setOnScrollListener(object : AbsListView.OnScrollListener {
             override fun onScroll(
