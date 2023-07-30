@@ -220,7 +220,7 @@ class PokedexListActivity : Activity() {
     }
 
     companion object {
-        const val VISIBLE_THRESHOLD = 10
+        const val VISIBLE_THRESHOLD = 15
         const val LIMIT = 20
     }
 

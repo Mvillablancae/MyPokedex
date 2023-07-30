@@ -5,11 +5,7 @@
     android:orientation="horizontal"
     android:padding="16dp">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:scaleType="centerCrop" />
+
 
     <TextView
         android:id="@+id/nameTextView"

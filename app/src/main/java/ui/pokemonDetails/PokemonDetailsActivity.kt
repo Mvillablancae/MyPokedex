@@ -26,8 +26,7 @@ import kotlinx.coroutines.cancel
 
 
 import com.example.mypokedex.R
-import kotlinx.android.synthetic.main.item_pokemon.*
-import kotlinx.android.synthetic.main.pokemon_details.*
+
 
 
 import model.PokemonDetailResponse
