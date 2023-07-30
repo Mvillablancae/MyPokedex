@@ -14,9 +14,9 @@ My Pokedex App es una aplicación que muestra una lista de Pokémon y permite ve
 ## Capturas de Pantalla
 
 Inserta aquí algunas capturas de pantalla de tu aplicación para mostrar cómo se ve.
-![Pantalla principal](https://imgur.com/H2CMZYX)
-![Barra de busqueda](https://imgur.com/ztQNL5Q)
-![Detalles Pokemon](https://imgur.com/aEvvt4x)
+![Pantalla principal](https://imgur.com/H2CMZYX.jpg)
+![Barra de busqueda](https://imgur.com/ztQNL5Q.jpg)
+![Detalles Pokemon](https://imgur.com/aEvvt4x.jpg)
 
 
 ## Instalación
