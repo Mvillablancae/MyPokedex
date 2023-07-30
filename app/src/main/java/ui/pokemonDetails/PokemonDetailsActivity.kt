@@ -4,6 +4,8 @@ import Network.PokeAPIClient
 import android.app.Activity
 import android.os.Bundle
 import android.widget.ImageView
+import android.view.LayoutInflater
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.ProgressBar
 import android.widget.Toast
@@ -66,7 +68,8 @@ class PokemonDetailsActivity : Activity() {
     private fun loadPokemonDetails(name : String) {
         isLoading = true
         //progressBar.visibility = View.VISIBLE
-        val textViewTipo = findViewById<TextView>(R.id.textViewTypeValue)
+        val typesLinearLayout = findViewById<LinearLayout>(R.id.types)
+        val pokemonStatsLinearLayout = findViewById<LinearLayout>(R.id.pokemonStats)
         val textViewHeight = findViewById<TextView>(R.id.textViewHeightValue)
         val textViewWeight = findViewById<TextView>(R.id.textViewWeightValue)
 
@@ -84,7 +87,30 @@ class PokemonDetailsActivity : Activity() {
                         throw Exception("Pokemon no válido")
                     }else{
                         title = "#${pokemonDetails?.id.toString()} ${pokemonDetails?.name}"
-                        textViewTypeValue.text = pokemonDetails?.types!!.first().type?.name
+                        //Añadir tipos a la vista
+                        for(type in pokemonDetails!!.types) {
+                            val textView = TextView(this@PokemonDetailsActivity)
+                            textView.text = type.type?.name
+                            textView.setPadding(10, 0,10,0)
+                            typesLinearLayout.setPadding(25,0,0,0)
+                            typesLinearLayout.addView(textView)
+                        }
+                        //Añadir stats a la vista
+                        for(stat in pokemonDetails!!.stats) {
+                            // Inflar el layout custom_layout.xml y obtener el LinearLayout
+                            val inflater = LayoutInflater.from(this@PokemonDetailsActivity)
+                            val customLayout = inflater.inflate(R.layout.pokemon_stat_bar, null) as LinearLayout
+
+                            // Obtener las referencias a los elementos TextView y ProgressBar
+                            val textView = customLayout.findViewById<TextView>(R.id.textView)
+                            val progressBar = customLayout.findViewById<ProgressBar>(R.id.progressBar3)
+
+                            // Aquí puedes establecer el texto y el progreso para los elementos
+                            textView.text = stat.stat?.name
+                            progressBar.progress = stat?.baseStat!!.toInt()
+                            pokemonStatsLinearLayout.setPadding(20,0,20,0)
+                            pokemonStatsLinearLayout.addView(customLayout)
+                        }
                         textViewHeight.text = "${pokemonDetails?.height.toString()} ft."
                         textViewWeight.text = "${pokemonDetails?.weight.toString()} lbs."
                         Glide.with(this@PokemonDetailsActivity)
