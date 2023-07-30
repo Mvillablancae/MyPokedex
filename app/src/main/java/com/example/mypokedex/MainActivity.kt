@@ -4,7 +4,7 @@ import android.content.Intent
 import android.app.Activity
 import android.os.Bundle
 
-import ui.pokedex.PokedexListActivity
+import ui.pokemonList.PokedexListActivity
 
 class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,9 +1,13 @@
-package ui.pokedex
+
+package ui.pokemonList
 
 import Network.PokeAPIClient
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.AdapterView
+
 import android.widget.AbsListView
 import android.widget.ListView
 import android.widget.ProgressBar
@@ -24,11 +28,16 @@ import kotlinx.coroutines.cancel
 import com.example.mypokedex.R
 import model.Pokemon
 
+import ui.pokemonDetails.PokemonDetailsActivity
+
+
 class PokedexListActivity : Activity() {
 
     private lateinit var listView: ListView
     private lateinit var progressBar: ProgressBar
-    private lateinit var pokemonAdapter: PokemonDetailsAdapter
+
+    private lateinit var pokemonAdapter: PokemonListAdapter
+
     private val pokemonList = mutableListOf<Pokemon>()
     private var isLoading = false
     private var offset = 0
@@ -43,7 +52,9 @@ class PokedexListActivity : Activity() {
 
         listView = findViewById(R.id.listView)
         progressBar = findViewById(R.id.progressBar)
-        pokemonAdapter = PokemonDetailsAdapter(this, pokemonList)
+
+        pokemonAdapter = PokemonListAdapter(this, pokemonList)
+
         listView.adapter = pokemonAdapter
 
         listView.setOnScrollListener(object : AbsListView.OnScrollListener {
@@ -61,6 +72,15 @@ class PokedexListActivity : Activity() {
 
             override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {}
         })
+
+
+        listView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+            val selectedName = pokemonList[position].name
+
+            val intent = Intent(this, PokemonDetailsActivity::class.java)
+            intent.putExtra("name", selectedName)
+            startActivity(intent)
+        }
 
         loadMorePokemon()
     }
@@ -94,9 +114,9 @@ class PokedexListActivity : Activity() {
                     Toast.makeText(this@PokedexListActivity, "Error de conexión de red", Toast.LENGTH_SHORT).show()
 
             } catch (e: Exception) {
-                Toast.makeText(this@PokedexListActivity, "Error en el servidor, inténtelo de nuevo más tarde.", Toast.LENGTH_SHORT).show()
-            }
 
+                Toast.makeText(this@PokedexListActivity, "Error desconocido, inténtelo de nuevo más tarde.", Toast.LENGTH_SHORT).show()
+            }
             isLoading = false
             progressBar.visibility = View.GONE
         }

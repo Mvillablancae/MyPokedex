@@ -1,4 +1,6 @@
-package ui.pokedex
+
+package ui.pokemonList
+
 
 import android.app.Activity
 import android.view.LayoutInflater
@@ -9,11 +11,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 
-import model.PokemonDetailResponse
+
 import com.example.mypokedex.R
 import model.Pokemon
 
-class PokemonDetailsAdapter(
+class PokemonListAdapter(
     context: Activity,
     private val pokemonList: List<Pokemon>
 ) : ArrayAdapter<Pokemon>(context, R.layout.item_pokemon, pokemonList) {

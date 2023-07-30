@@ -26,7 +26,12 @@
                 android:value="" />
         </activity>
         <activity
-            android:name="ui.pokedex.PokedexListActivity"
+            android:name="ui.pokemonList.PokedexListActivity"
+            android:label="Pokedex">
+            <!-- Otros atributos de la actividad -->
+        </activity>
+        <activity
+            android:name="ui.pokemonDetails.PokemonDetailsActivity"
             android:label="Pokedex">
             <!-- Otros atributos de la actividad -->
         </activity>
