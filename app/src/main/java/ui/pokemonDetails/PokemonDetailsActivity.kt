@@ -105,7 +105,6 @@ class PokemonDetailsActivity : Activity() {
                             val textView = customLayout.findViewById<TextView>(R.id.textView)
                             val progressBar = customLayout.findViewById<ProgressBar>(R.id.progressBar3)
 
-                            // Aquí puedes establecer el texto y el progreso para los elementos
                             textView.text = stat.stat?.name
                             progressBar.progress = stat?.baseStat!!.toInt()
                             pokemonStatsLinearLayout.setPadding(20,0,20,0)

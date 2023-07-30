@@ -6,9 +6,11 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.Menu
+import android.view.MenuItem
+import android.view.MenuInflater
 import android.widget.AdapterView
-import android.widget.TextClock
-
+import android.widget.SearchView
 import android.widget.AbsListView
 import android.widget.ListView
 import android.widget.ProgressBar
@@ -25,6 +27,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+
 
 import com.example.mypokedex.R
 import model.Pokemon
@@ -39,11 +44,15 @@ class PokedexListActivity : Activity() {
 
     private lateinit var pokemonAdapter: PokemonListAdapter
 
+
     private val pokemonList = mutableListOf<Pokemon>()
+    private val originalPokemonList = mutableListOf<Pokemon>()
     private var isLoading = false
     private var offset = 0
+    private var isLastPage : Boolean = false
+    private var job: Job? = null
 
-    // Declarar una propiedad para el CoroutineScope
+
     private val coroutineScope: CoroutineScope = MainScope()
 
 
@@ -58,17 +67,6 @@ class PokedexListActivity : Activity() {
 
         listView.adapter = pokemonAdapter
 
-        // Crear una instancia de TextClock
-        val textClock = TextClock(this)
-        textClock.textSize = 18f
-        //textClock.format12Hour = "hh:mm:ss a"
-        textClock.format24Hour = "HH:mm"
-
-        // Configurar el TextClock como vista personalizada en la ActionBar
-        actionBar?.setDisplayShowCustomEnabled(true)
-        actionBar?.setDisplayHomeAsUpEnabled(false)
-        actionBar?.setDisplayShowTitleEnabled(false)
-        actionBar?.customView = textClock
 
         listView.setOnScrollListener(object : AbsListView.OnScrollListener {
             override fun onScroll(
@@ -79,11 +77,19 @@ class PokedexListActivity : Activity() {
             ) {
                 if ((!isLoading && totalItemCount <= (firstVisibleItem + VISIBLE_THRESHOLD )) && offset != 0) {
                     // Cargar más elementos cuando el usuario llega al final de la lista
-                    loadMorePokemon()
+                    if (pokemonList.size < VISIBLE_THRESHOLD) {
+                        isLastPage = true
+                    } else {
+                        // Cargar más elementos cuando el usuario llega al final de la lista
+                        isLastPage = false
+                        loadMorePokemon()
+                    }
                 }
             }
 
-            override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {}
+            override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {
+
+            }
         })
 
 
@@ -98,6 +104,82 @@ class PokedexListActivity : Activity() {
         loadMorePokemon()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.layout.menu_search , menu)
+
+        // Configurar la funcionalidad de la barra de búsqueda
+        val searchItem = menu.findItem(R.id.action_search)
+        val searchView = searchItem.actionView as SearchView
+
+        // Agregar el listener para la búsqueda
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                // Cancelar el job anterior si aún está en progreso
+                if(job != null){
+                    job!!.cancel()
+                }
+                // Iniciar una nueva búsqueda con un pequeño retraso para evitar búsquedas frecuentes mientras el usuario escribe
+                job = CoroutineScope(Dispatchers.Main).launch {
+                    delay(500) // Esperar 800 milisegundos antes de realizar la búsqueda
+                    if (newText.isEmpty()) {
+                        // Si el texto de búsqueda está vacío, restaurar la lista original
+                        pokemonList.clear()
+                        pokemonList.addAll(originalPokemonList)
+                        pokemonAdapter.notifyDataSetChanged()
+                    } else {
+                        filterPokemonList(newText)
+                    }
+                }
+                return true
+            }
+
+        })
+
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                // Manejar el evento del botón de regreso en la barra de acción
+                onBackPressed()
+                return true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
+
+
+    private fun filterPokemonList(filterText: String) {
+        // Cancelar la búsqueda anterior si aún está en progreso
+        if(job != null){
+            job!!.cancel()
+        }
+        Toast.makeText(this@PokedexListActivity, "Buscando: $filterText", Toast.LENGTH_SHORT).show()
+        // Iniciar una nueva búsqueda
+        job = CoroutineScope(Dispatchers.IO).launch {
+            val filteredList = mutableListOf<Pokemon>()
+
+            for (pokemon in pokemonList) {
+                if (pokemon.name?.startsWith(filterText, ignoreCase = true) == true) {
+                    filteredList.add(pokemon)
+                }
+            }
+
+            // Actualizar el ListView con los elementos filtrados en el hilo principal
+            withContext(Dispatchers.Main) {
+                pokemonAdapter.clear()
+                pokemonAdapter.addAll(filteredList)
+                pokemonAdapter.notifyDataSetChanged()
+            }
+        }
+    }
 
     private fun loadMorePokemon() {
         isLoading = true
@@ -112,7 +194,7 @@ class PokedexListActivity : Activity() {
                 if (response.isSuccessful) {
                     val pokemonListAPIResponse = response.body()
                     val newPokemonList = pokemonListAPIResponse?.results ?: emptyList()
-                    pokemonList.addAll(newPokemonList)
+                    originalPokemonList.addAll(newPokemonList)
                     pokemonAdapter.notifyDataSetChanged()
                     offset += newPokemonList.size
                 } else {
@@ -130,6 +212,8 @@ class PokedexListActivity : Activity() {
 
                 Toast.makeText(this@PokedexListActivity, "Error desconocido, inténtelo de nuevo más tarde.", Toast.LENGTH_SHORT).show()
             }
+            pokemonList.clear()
+            pokemonList.addAll(originalPokemonList)
             isLoading = false
             progressBar.visibility = View.GONE
         }
@@ -144,6 +228,7 @@ class PokedexListActivity : Activity() {
     // Llamar a cancel en onDestroy para cancelar el scope y liberar recursos
     override fun onDestroy() {
         super.onDestroy()
+
         coroutineScope.cancel()
     }
 }
