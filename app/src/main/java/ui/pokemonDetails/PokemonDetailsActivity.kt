@@ -38,12 +38,14 @@ class PokemonDetailsActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.pokemon_details)
         actionBar?.setDisplayHomeAsUpEnabled(true)
-        //progressBar = findViewById(R.id.progressBar)
-        val intent = intent
 
+
+        // Obtener nombre a traves del intent
+        val intent = intent
         var nombre : String = intent.getStringExtra("name") ?: "Unknown"
 
 
+        //Obtener elementos de la vista
         val textViewNombre = findViewById<TextView>(R.id.textViewNameValue)
         val textViewTipo = findViewById<TextView>(R.id.textViewTypeValue)
         val textViewPokedexId = findViewById<TextView>(R.id.textViewIdPokedexValue)
@@ -52,6 +54,12 @@ class PokemonDetailsActivity : Activity() {
         title = nombre
         textViewNombre.text = nombre
         loadPokemonDetails(nombre)
+    }
+
+    // Opcional: Si deseas manejar el clic en el botón de regreso
+    override fun onNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
 
